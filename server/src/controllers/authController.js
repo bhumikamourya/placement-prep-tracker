@@ -52,7 +52,7 @@ exports.loginUser = async(req, res)=>{
         //compare password
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
-            res.status(401).json({message:"Invalid email or password"});
+           return res.status(401).json({message:"Invalid email or password"});
         }
 
         // TOKEN create karenge

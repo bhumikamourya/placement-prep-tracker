@@ -5,7 +5,9 @@ const api = axios.create({
 });
 api.interceptors.request.use((req) => {
     const token = getToken();
-    if(token) req.headers.Authorization = `Bearer ${token}`;
+    if(token) {
+        req.headers.Authorization = `Bearer ${token}`;
+    }
     return req;
 });
 export default api;
