@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import Skills from './pages/Skills';
 
 
 function App() {
@@ -16,6 +17,12 @@ function App() {
       element={
       <ProtectedRoute>
         <Dashboard/>
+        </ProtectedRoute>
+      }/>
+      <Route path="/skills" 
+      element={
+      <ProtectedRoute>
+        <Skills/>
         </ProtectedRoute>
       }/>
     </Routes>
