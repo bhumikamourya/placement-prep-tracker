@@ -25,6 +25,14 @@ function App() {
         <Skills/>
         </ProtectedRoute>
       }/>
+      {/* <Route path="/readiness" element={
+        <ProtectedRoute>
+        <readinessService/>
+        </ProtectedRoute>}/>
+      <Route path="/skill-gap" element={
+        <ProtectedRoute>
+        <readinessService/>
+        </ProtectedRoute>}/> */}
     </Routes>
     </BrowserRouter>
   );
