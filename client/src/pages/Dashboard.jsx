@@ -16,6 +16,12 @@ const Dashboard = () => {
                 const res = await api.get("/dashboard");
                 console.log(res.data);
                 setdata(res.data);
+
+                const readinessData = await getReadiness();
+                setReadiness(readinessData.readinessScore ?? 0);
+                const skillGapData = await getSkillGap();
+                const weakOnly = skillGapData.filter(skill => skill.status < 2);
+                setWeakSkills(weakOnly);
             } catch (err) {
                 seterror("Failed to load dashboard");
             } finally {
@@ -25,10 +31,16 @@ const Dashboard = () => {
         fetchDashboard();
     }, []);
 
-    useEffect(()=>{
-        getReadiness().then(data =>setReadiness(data.score));
-        getSkillGap().then(setWeakSkills);
-    },[]);
+    // useEffect(() => {
+    //     getReadiness().then(data => {
+    //         console.log("Readiness API response:", data);
+    //         setReadiness(data.readinessScore ?? 0);
+    //     });
+    //     getSkillGap().then(data => {
+    //         const weakOnly = data.filter(skill => skill.status < 2); // Not Started or In Progress
+    //         setWeakSkills(weakOnly);
+    //     });
+    // }, []);
 
     if (loading) return <p>Loading dashboard...</p>
     if (error) return <p>{error}</p>
@@ -37,18 +49,29 @@ const Dashboard = () => {
         <div>
             <h2>Hello, {data?.userName}👋</h2>
             <p>Total Skills: {data.totalSkills}</p>
-            <p>Weak Skills: {data.weakSkills}</p>
+            <p>Weak Skills: {weakSkills.length}</p>
             <p>Total Tasks: {data.totalTasks}</p>
             <p>Completed Tasks: {data.completedTasks}</p>
             <p>Pending Tasks: {data.pendingTasks}</p>
             <div>
                 <h3>Readiness Score: {readiness}%</h3>
-                <h3>Weak/Missing Skills:</h3>
+                {weakSkills.length > 0 && (
+                    <>
+                    <h3>Weak / Missing Skills:</h3>
+                    {weakSkills.map(skill =>(
+                        <div key={skill.topic}>
+                            {skill.category} - {skill.topic}(
+                                {["Not Started" , "In Progress"][skill.status]})
+                        </div>
+                    ))}
+                    </>
+                )}
+                {/* <h3>Weak/Missing Skills:</h3>
                 {weakSkills.map(skill => (
                     <div key={skill.topic}>
                         {skill.category}-{skill.topic}({["Not Started", "In Progress"][skill.status]})
                     </div>
-                ))}
+                ))} */}
             </div>
         </div>
     );

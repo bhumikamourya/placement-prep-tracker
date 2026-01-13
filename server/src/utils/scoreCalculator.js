@@ -1,5 +1,3 @@
-const MockTest = require("../models/MockTest");
-
 const skillScoreMap = {
     0: 0, // not started
     1: 2,//in progress
