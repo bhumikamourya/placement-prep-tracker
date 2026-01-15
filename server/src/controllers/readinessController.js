@@ -25,13 +25,17 @@ exports.getReadinessTrend = async (req, res) => {
         .find({ userId: req.user.id })
         .sort({ date: 1 });
 
-    const streak = history.reduce((count, item, index) => {
-        if (index === 0) return 1;
-        const diff =
-            (item.date - history[index - 1].date) / (1000 * 60 * 60 * 24);
-        return diff === 1 ? count + 1 : count;
-    }, 0);
+    let streak = 0;
 
-    res.json({ history, streak });
+  for (let i = history.length - 1; i > 0; i--) {
+    const diff =
+      (history[i].date - history[i - 1].date) / (1000 * 60 * 60 * 24);
+    if (diff === 1) streak++;
+    else break;
+  }
+
+  streak = history.length ? streak + 1 : 0;
+
+  res.json({ history, streak });
 };
 

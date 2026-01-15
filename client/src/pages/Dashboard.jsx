@@ -4,6 +4,7 @@ import { getSkillGap } from "../services/skillGapService";
 import { getMockAnalysis } from "../services/mockAnalysisService";
 import api from "../services/api";
 import { getReadinessTrend } from "../services/readinessTrendService";
+import {Link} from "react-router-dom";
 
 
 const Dashboard = () => {
@@ -93,7 +94,7 @@ const Dashboard = () => {
                 </div>
             )}
 
-            <h3>Consistency Streak: {streak} days</h3>
+            <h3>Consistency Streak: {streak} day</h3>
 
             <h3>Readiness Trend</h3>
             {trend.map((t, i) => (
@@ -102,6 +103,7 @@ const Dashboard = () => {
                 </div>
             ))}
 
+            <Link to="/study-plan">View Smart Study Plan -</Link>
         </div>
     );
 };
