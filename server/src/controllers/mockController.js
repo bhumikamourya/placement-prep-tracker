@@ -61,3 +61,46 @@ exports.getWeakTopics = async (req, res) => {
         res.status(500).json({message: "Server Error"});
     }
 };
+
+
+exports.getMockAnalysis = async (req, res) => {
+  const tests = await MockTest.find({ userId: req.user.id });
+
+  if (tests.length === 0) {
+    return res.json({ hasMock: false });
+  }
+
+  let totalQ = 0;
+  let totalCorrect = 0;
+  const topicAccuracy = {};
+
+  tests.forEach(t => {
+    totalQ += t.totalQuestions;
+    totalCorrect += t.correctAnswers;
+
+    const acc = (t.correctAnswers / t.totalQuestions) * 100;
+    topicAccuracy[t.topic] = topicAccuracy[t.topic] || [];
+    topicAccuracy[t.topic].push(acc);
+  });
+
+  const accuracy = Math.round((totalCorrect / totalQ) * 100);
+
+  const weakTopics = Object.entries(topicAccuracy)
+    .map(([topic, arr]) => ({
+      topic,
+      avg: arr.reduce((a, b) => a + b, 0) / arr.length
+    }))
+    .filter(t => t.avg < 70)
+    .map(t => t.topic);
+
+  const readinessImpact = accuracy >= 80 ? +5 : accuracy >= 60 ? 0 : -5;
+
+  res.json({
+    hasMock: true,
+    accuracy,
+    totalQuestions: totalQ,
+    correctAnswers: totalCorrect,
+    weakTopics,
+    readinessImpact
+  });
+};

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { addSkill } from '../services/skillService';
 const AddSkill = ({ onAdd }) => {
+    
     const [form, setform] = useState({
         category: "DSA",
         topicName: "",

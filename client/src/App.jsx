@@ -6,7 +6,6 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Skills from './pages/Skills';
 
-
 function App() {
   return (
     <BrowserRouter>
@@ -25,14 +24,6 @@ function App() {
         <Skills/>
         </ProtectedRoute>
       }/>
-      {/* <Route path="/readiness" element={
-        <ProtectedRoute>
-        <readinessService/>
-        </ProtectedRoute>}/>
-      <Route path="/skill-gap" element={
-        <ProtectedRoute>
-        <readinessService/>
-        </ProtectedRoute>}/> */}
     </Routes>
     </BrowserRouter>
   );
