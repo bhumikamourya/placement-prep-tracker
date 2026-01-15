@@ -3,6 +3,7 @@ import { getReadiness } from "../services/readinessService";
 import { getSkillGap } from "../services/skillGapService";
 import { getMockAnalysis } from "../services/mockAnalysisService";
 import api from "../services/api";
+import { getReadinessTrend } from "../services/readinessTrendService";
 
 
 const Dashboard = () => {
@@ -12,6 +13,8 @@ const Dashboard = () => {
     const [readiness, setReadiness] = useState(0);
     const [gaps, setGaps] = useState([]);
     const [mockAnalysis, setMockAnalysis] = useState(null);
+    const [trend, setTrend] = useState([]);
+    const [streak, setStreak] = useState(0);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -22,9 +25,16 @@ const Dashboard = () => {
 
                 const readinessData = await getReadiness();
                 setReadiness(readinessData.readinessScore ?? 0);
+
                 const gapRes = await getSkillGap();
                 setGaps(gapRes);
+
                 getMockAnalysis().then(setMockAnalysis);
+
+                getReadinessTrend().then(data => {
+                    setTrend(data.history);
+                    setStreak(data.streak);
+                });
             } catch (err) {
                 seterror("Failed to load dashboard");
             } finally {
@@ -48,7 +58,7 @@ const Dashboard = () => {
             <p>Pending Tasks: {data.pendingTasks}</p>
 
             <h3>Readiness Score: {readiness}%</h3>
-            
+
             <h3>What to Study Next</h3>
             {gaps.map((gap, index) => (
                 <div key={index}>
@@ -82,6 +92,16 @@ const Dashboard = () => {
                     )}
                 </div>
             )}
+
+            <h3>Consistency Streak: {streak} days</h3>
+
+            <h3>Readiness Trend</h3>
+            {trend.map((t, i) => (
+                <div key={i}>
+                    {new Date(t.date).toLocaleDateString()} — {t.score}%
+                </div>
+            ))}
+
         </div>
     );
 };
