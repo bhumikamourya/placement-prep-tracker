@@ -3,8 +3,8 @@ const router = express.Router() ;
 const auth = require("../middleware/authMiddleware");
 const {generateStudyPlan, getTodayPlan , markTaskDone} = require("../controllers/studyPlanController.js");
 
+router.get("/" ,auth, getTodayPlan);
 router.post("/generate", auth, generateStudyPlan);
-router.get("/today" ,auth, getTodayPlan);
-router.patch("/task/:taskId" , auth , markTaskDone);
+router.patch("/task/:taskId/complete" , auth , markTaskDone);
 
 module.exports = router;
