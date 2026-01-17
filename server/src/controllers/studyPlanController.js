@@ -67,6 +67,13 @@ exports.generateStudyPlan = async (req ,res)=>{
 
          res.status(201).json(plan);
     }catch(error){
+        if(error.code === 11000){
+            const plan = await StudyPlan.findOne({
+                userId : req.user.id,
+                date : getToday()
+            })
+            return res.json(plan);
+        }
         res.status(500).json({message : "Failed to generate study plan"})
     }
 };

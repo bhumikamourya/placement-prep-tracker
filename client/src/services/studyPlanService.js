@@ -1,5 +1,10 @@
 import api from "./api";
 
+export const generateStudyPlan = async()=>{
+    const res = await api.post("/study-plan/generate");
+    return res.data;
+}
+
 export const getStudyPlan = async()=>{
     const res = await api.get("/study-plan");
     return res.data;

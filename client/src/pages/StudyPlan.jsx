@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { getStudyPlan, markTaskDone } from "../services/studyPlanService";
+import {generateStudyPlan, getStudyPlan, markTaskDone } from "../services/studyPlanService";
 
 const StudyPlan = ()=>{
     const [plan, setPlan] = useState(null);
+    const [loading, setloading] = useState(true);
     
 
     useEffect(()=>{
@@ -10,14 +11,24 @@ const StudyPlan = ()=>{
     },[]);
 
     const loadPlan = async ()=>{
+        try{
         const data  = await getStudyPlan();
         setPlan(data);
+        }catch(err){
+            if(err.response?.status === 404){
+                const data = await generateStudyPlan();
+                setPlan(data);
+            }
+        }finally{
+            setloading(false);
+        }
     };
         const handleComplete = async(taskId) =>{
             await markTaskDone(taskId);
             loadPlan();
         };
-        if(!plan) return <p>No study plan for today!</p>;
+        if(loading) return <p>Generating study plan...</p>;
+        if(!plan) return <p>No study plan for today</p>;
         return(
             <div>
                 <h2>Smart Study Plan</h2>
