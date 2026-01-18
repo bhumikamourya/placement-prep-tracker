@@ -2,6 +2,7 @@ const StudyPlan = require("../models/StudyPlan");
 const Skill = require("../models/skill");
 const MockTest = require("../models/MockTest");
 const {saveDailyPerformance} = require("../services/performanceService");
+const {adjustStudyWeights} = require("../services/studyPlanAdjustmentService");
 
 const DAILY_TIME_LIMIT = 120;
 
@@ -11,6 +12,8 @@ exports.generateStudyPlan = async (req ,res)=>{
     try { 
         const userId = req.user.id;
         const today = getToday();
+
+        const adjustmentNote = await adjustStudyWeights(userId);
 
         //prevent duplicate plan
         const existing = await StudyPlan.findOne({userId, date : today});
@@ -63,7 +66,8 @@ exports.generateStudyPlan = async (req ,res)=>{
          const plan = await StudyPlan.create({
             userId,
             date : today,
-            tasks : finalTasks
+            tasks : finalTasks,
+            adjustmentNote
          });
 
          res.status(201).json(plan);

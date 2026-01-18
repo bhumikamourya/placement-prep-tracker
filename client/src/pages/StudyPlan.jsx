@@ -36,6 +36,12 @@ const StudyPlan = ()=>{
                     <div key={plan.date} style={{marginBottom:"20px"}}>
                         <h3>{new Date(plan.date).toLocaleString()}</h3>
 
+                        {plan.adjustmentNote &&(
+                            <div style={{paddding : "10px" , background: "#fff3cd", marginBottom: "10px"}}>
+                                {plan.adjustmentNote}
+                            </div>
+                        )}
+
                         {plan.tasks.map(task =>(
                             <div
                             key= {task._id}
