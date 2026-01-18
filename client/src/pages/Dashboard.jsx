@@ -5,6 +5,7 @@ import { getMockAnalysis } from "../services/mockAnalysisService";
 import api from "../services/api";
 import { getReadinessTrend } from "../services/readinessTrendService";
 import {Link} from "react-router-dom";
+import { getPerformanceAnalytics } from "../services/performanceService";
 
 
 const Dashboard = () => {
@@ -16,6 +17,7 @@ const Dashboard = () => {
     const [mockAnalysis, setMockAnalysis] = useState(null);
     const [trend, setTrend] = useState([]);
     const [streak, setStreak] = useState(0);
+    const [performance, setPerformance] = useState([]);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -36,6 +38,8 @@ const Dashboard = () => {
                     setTrend(data.history);
                     setStreak(data.streak);
                 });
+
+                getPerformanceAnalytics().then(setPerformance);
             } catch (err) {
                 seterror("Failed to load dashboard");
             } finally {
@@ -104,6 +108,13 @@ const Dashboard = () => {
             ))}
 
             <Link to="/study-plan">View Smart Study Plan -</Link>
+
+            <h3>Performance Over Time</h3>
+            {performance.map((p, i)=>(
+                <div key={i}>{new Date(p.date).toLocaleDateString()} - {p.completionRate}% tasks completed - 
+                Readiness : {p.avgReadinessScore}%
+                </div>
+            ))}
         </div>
     );
 };

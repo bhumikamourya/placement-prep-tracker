@@ -7,6 +7,7 @@ const readinessRoutes = require("./routes/readinessRoutes.js");
 const skillGapRoutes = require("./routes/skillGapRoutes.js");
 const studyPlanRouter = require("./routes/studyPlanRoutes.js");
 const dashboardRoutes = require("./routes/dashboardRoutes.js");
+const performanceRoutes = require("./routes/performanceRoutes.js");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/mocks", mockRoutes);
 app.use("/api/readiness", readinessRoutes);
 app.use("/api/skill-gap" , skillGapRoutes);
 app.use("/api/study-plan", studyPlanRouter);
-app.use("/api/dashboard", dashboardRoutes)
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api", performanceRoutes);
 
 module.exports = app; //export app for server.js

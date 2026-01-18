@@ -1,6 +1,7 @@
 const StudyPlan = require("../models/StudyPlan");
 const Skill = require("../models/skill");
 const MockTest = require("../models/MockTest");
+const {saveDailyPerformance} = require("../services/performanceService");
 
 const DAILY_TIME_LIMIT = 120;
 
@@ -92,8 +93,11 @@ exports.getTodayPlan = async (req , res)=>{
 exports.markTaskDone = async (req, res)=>{
     const plan = await StudyPlan.findOne({"tasks._id":req.params.taskId});
     if(!plan) return res.status(404).json({message : "Task not found"});
+
     plan.tasks.id(req.params.taskId).status = "DONE";
     await plan.save();
+
+    await saveDailyPerformance(plan.userId);
 
     res.json({message : "Task marked DONE "});
 };

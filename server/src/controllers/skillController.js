@@ -4,7 +4,7 @@ const Skill = require("../models/skill.js");
 exports.addSkill = async(req ,res)=>{
     try{
         const {category, topicName, status} = req.body;
-        if(!category || ! topicName || status){
+        if(!category || ! topicName){
             return res.status(401).json({message: "Category, topic and status are required"});
         }
 
