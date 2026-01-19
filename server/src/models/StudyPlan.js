@@ -22,7 +22,7 @@ const studyPlanSchema = new mongoose.Schema({
         required : true
     },
     date : {
-        type : String , 
+        type : Date , 
         required : true
     },
     tasks : [taskSchema],
@@ -33,7 +33,12 @@ const studyPlanSchema = new mongoose.Schema({
     adjustmentNote :{
         type : String,
         default : null
-    }
+    },
+    decisionReasons :[
+        {
+            type : String
+        }
+    ],
 });
 
 studyPlanSchema.index({userId :1, date : 1}, {unique : true});

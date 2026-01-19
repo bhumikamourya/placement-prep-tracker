@@ -22,6 +22,6 @@ app.use("/api/readiness", readinessRoutes);
 app.use("/api/skill-gap" , skillGapRoutes);
 app.use("/api/study-plan", studyPlanRouter);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api", performanceRoutes);
+app.use("/api/performance", performanceRoutes);
 
 module.exports = app; //export app for server.js

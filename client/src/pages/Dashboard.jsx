@@ -18,6 +18,7 @@ const Dashboard = () => {
     const [trend, setTrend] = useState([]);
     const [streak, setStreak] = useState(0);
     const [performance, setPerformance] = useState([]);
+    const [readinessExplanation, setReadinessExplanation] = useState([]);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -29,17 +30,21 @@ const Dashboard = () => {
                 const readinessData = await getReadiness();
                 setReadiness(readinessData.readinessScore ?? 0);
 
+                const explanationRes = await api.get("/readiness/explain");
+                setReadinessExplanation(explanationRes.data.explanation);
+ 
                 const gapRes = await getSkillGap();
                 setGaps(gapRes);
 
-                getMockAnalysis().then(setMockAnalysis);
+                const mock = await getMockAnalysis();
+                setMockAnalysis(mock);
 
-                getReadinessTrend().then(data => {
-                    setTrend(data.history);
-                    setStreak(data.streak);
-                });
+                const trendData = await getReadinessTrend();
+                    setTrend(trendData.history);
+                    setStreak(trendData.streak);
 
-                getPerformanceAnalytics().then(setPerformance);
+                const performance = await getPerformanceAnalytics();
+                setPerformance(performance);
             } catch (err) {
                 seterror("Failed to load dashboard");
             } finally {
@@ -63,6 +68,17 @@ const Dashboard = () => {
             <p>Pending Tasks: {data.pendingTasks}</p>
 
             <h3>Readiness Score: {readiness}%</h3>
+
+            <h4>How readiness is calculated</h4>
+            {readinessExplanation.length === 0 ? (
+                <p>No explanation available.</p>
+            ):(
+            <ul>
+                {readinessExplanation.map((e, i)=>(
+                    <li key={i}>{e}</li>
+                ))}
+            </ul>
+    )}
 
             <h3>What to Study Next</h3>
             {gaps.map((gap, index) => (

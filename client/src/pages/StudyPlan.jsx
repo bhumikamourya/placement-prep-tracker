@@ -33,6 +33,10 @@ const StudyPlan = ()=>{
             <div>
                 <h2>Smart Study Plan</h2>
 
+                {plan.tasks.length === 0 && (
+                    <p>🎉 No tasks today. You are fully on track.</p>
+                )}
+
                     <div key={plan.date} style={{marginBottom:"20px"}}>
                         <h3>{new Date(plan.date).toLocaleString()}</h3>
 
@@ -62,6 +66,16 @@ const StudyPlan = ()=>{
                         ))}
 
                     </div> 
+                    {plan.decisionReasons?.length >0 && (
+                        <>
+                        <h4>Why this plan?</h4>
+                        <ul>
+                            {plan.decisionReasons.map((r, i)=>(
+                                <li key={i}>{r}</li>
+                            ))}
+                        </ul>
+                        </>
+                    )}
             </div>
         )
 };

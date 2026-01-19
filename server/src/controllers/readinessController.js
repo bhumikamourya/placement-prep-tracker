@@ -39,3 +39,13 @@ exports.getReadinessTrend = async (req, res) => {
   res.json({ history, streak });
 };
 
+exports.getReadinessExplanation = async(req, res)=>{
+    res.json({
+        explanation:[
+            "DSA progress contributes 40%",
+            "Mock test accuracy contributes 40%",
+            "Consistency contributes 20%"
+        ]
+    })
+}
+
