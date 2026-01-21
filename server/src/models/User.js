@@ -7,14 +7,18 @@ const userSchema = new mongoose.Schema({
     email : {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase : true,
+        trim : true
     },
     password: {
         type: String, 
-        required: true
+        required: true,
+        select : false
     },
     targetRole: {
         type : String,
+        enum :["Frontend", "Backend", "Fullstack", "Data" , "DSA", "SDE", "Analyst"],
         required: true
     }
 },{timestamps: true});

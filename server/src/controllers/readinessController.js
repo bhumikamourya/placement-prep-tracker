@@ -21,22 +21,36 @@ exports.getReadinessScore = async (req, res) => {
 };
 
 exports.getReadinessTrend = async (req, res) => {
+    try{
     const history = await ReadinessHistory
         .find({ userId: req.user.id })
         .sort({ date: 1 });
 
-    let streak = 0;
+        if(history.length === 0){
+            return res.json({history :[], streak :0});
+        }
+
+    let streak = 1;
 
   for (let i = history.length - 1; i > 0; i--) {
-    const diff =
-      (history[i].date - history[i - 1].date) / (1000 * 60 * 60 * 24);
-    if (diff === 1) streak++;
-    else break;
+    const curr = new Date(history[i].date);
+    const prev = new Date(history[i - 1].date);
+
+    curr.setHours(0,0,0,0);
+    prev.setHours(0,0,0,0);
+
+    const diffDays = (curr - prev) / (1000 *60 *60*24);
+
+    if (diffDays === 1) streak++;
+    else {
+        break;
+    }
   }
 
-  streak = history.length ? streak + 1 : 0;
-
   res.json({ history, streak });
+}catch(error){
+    res.status(500).json({message : "Server Error"});
+}
 };
 
 exports.getReadinessExplanation = async(req, res)=>{

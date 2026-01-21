@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 
 const readinessHistorySchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  score: Number,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  score: {
+    type: Number,
+    required : true
+  },
   date: { type: Date, default: Date.now }
 });
 

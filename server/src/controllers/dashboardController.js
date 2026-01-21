@@ -12,7 +12,7 @@ exports.getDashboardData = async (req ,res) =>{
         //skills
         const skills = await Skill.find({userId});
         const totalSkills = skills.length;
-        const weakSkills = skills.filter(s => s.status === 1).length;
+        const weakSkills = skills.filter(s => s.status < 2).length;
 
         //studyPlan
         const plans = await StudyPlan.find({userId});

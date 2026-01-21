@@ -5,14 +5,14 @@ exports.addSkill = async(req ,res)=>{
     try{
         const {category, topicName, status} = req.body;
         if(!category || ! topicName){
-            return res.status(401).json({message: "Category, topic and status are required"});
+            return res.status(400).json({message: "Category, topic and status are required"});
         }
 
         const skill = await Skill.create({
             userId : req.user.id,
             category,
             topicName,
-            status
+            status : Number(status)
         });
         res.status(201).json(skill);
     }catch(error){

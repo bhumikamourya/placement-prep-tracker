@@ -38,7 +38,7 @@ exports.getMockTests = async (req, res) => {
 //get weak topics
 exports.getWeakTopics = async (req, res) => {
     try {
-        const tests = await MockTest.find({ userId: req.user.id });
+        const tests = await MockTest.find({ userId: req.user.id }).sort({date : -1});
         const topicAccuracy = {};
         tests.forEach(test => {
             const accuracy = (test.correctAnswers / test.totalQuestions) * 100;
@@ -64,7 +64,8 @@ exports.getWeakTopics = async (req, res) => {
 
 
 exports.getMockAnalysis = async (req, res) => {
-  const tests = await MockTest.find({ userId: req.user.id });
+    try{
+  const tests = await MockTest.find({ userId: req.user.id }).sort({date :-1});
 
   if (tests.length === 0) {
     return res.json({ hasMock: false });
@@ -103,4 +104,7 @@ exports.getMockAnalysis = async (req, res) => {
     weakTopics,
     readinessImpact
   });
+}catch(err){
+    res.status(500).json({message: "Server Error"});
+}
 };

@@ -133,8 +133,9 @@ exports.getTodayPlan = async (req, res) => {
 
 exports.markTaskDone = async (req, res) => {
     const plan = await StudyPlan.findOne({ userId : req.user.id, "tasks._id": req.params.taskId });
+    const task = plan.tasks.id(req.params.taskId);
 
-    if (!plan) return res.status(404).json({ message: "Task not found" });
+    if (!task) return res.status(404).json({ message: "Task not found" });
 
     if(task.status === "Done"){
         return res.status(400).json({message :"Task already completed"});
