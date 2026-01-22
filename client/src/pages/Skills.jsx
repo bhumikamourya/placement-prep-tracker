@@ -8,11 +8,6 @@ const Skills = () => {
     useEffect(() => {
             getSkills().then(setSkills);
         }, []);
-    //     getSkills().then(data => {
-    //         console.log("RAW SKILLS:", data);
-    //         setSkills(data);
-    //     });
-    // }, []);
     const grouped = skills.reduce((acc, skill) => {
         acc[skill.category] = acc[skill.category] || [];
         acc[skill.category].push(skill);

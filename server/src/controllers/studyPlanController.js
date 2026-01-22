@@ -137,7 +137,7 @@ exports.markTaskDone = async (req, res) => {
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    if(task.status === "Done"){
+    if(task.status === "DONE"){
         return res.status(400).json({message :"Task already completed"});
     }
     task.status= "DONE";

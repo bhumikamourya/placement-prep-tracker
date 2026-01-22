@@ -9,7 +9,7 @@ exports.adjustStudyWeights = async(userId) =>{
     //poor execution -> reduce load
     if(lastPerformance.completionRate < 50){
         await Skill.updateMany(
-            {userId, priority : "HIGH"},
+            {userId},
             {$set :{priority : "MEDIUM"}}
         );
         console.log("Reducing workload");

@@ -24,8 +24,10 @@ const Register = () => {
             <input placeholder="Password" onChange={e => setform({ ...form, password: e.target.value })} />
             <select onChange={e => setform({ ...form, targetRole: e.target.value })}>
                 <option>Select</option>
-                <option>Software Development Engineer</option>
-                <option>Analyst</option>
+                <option value="SDE">SDE</option>
+                <option value="Analyst">Analyst</option>
+                <option value="DSA">DSA</option>
+                <option value="CS">CS</option>
             </select>
             <button>Register</button>
         </form>

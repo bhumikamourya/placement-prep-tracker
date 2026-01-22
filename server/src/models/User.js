@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     targetRole: {
         type : String,
-        enum :["Frontend", "Backend", "Fullstack", "Data" , "DSA", "SDE", "Analyst"],
+        enum :["SDE", "Analyst", "DSA", "CS"],
         required: true
     }
 },{timestamps: true});

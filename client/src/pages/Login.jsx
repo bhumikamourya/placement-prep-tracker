@@ -25,8 +25,8 @@ const Login = () => {
              {error && <p style={{ color: "red" }}>{error}</p>}
 
 
-            <input placeholder="Email" name="email"  onChange={e => setform({ ...form, email: e.target.value })} />
-            <input type="password" name="password" placeholder="Passowrd" onChange={e => setform({ ...form, password: e.target.value })} />
+            <input value={form.email} placeholder="Email" name="email"  onChange={e => setform({ ...form, email: e.target.value })} />
+            <input value={form.password} type="password" name="password" placeholder="Passowrd" onChange={e => setform({ ...form, password: e.target.value })} />
             <button>Login</button>
         </form>
     );

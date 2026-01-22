@@ -1,13 +1,26 @@
 module.exports ={
     SDE:{
-        DSA : ['Arrays' , 'Strings', 'Binary Search', 'Recursion', 'Trees' , 'Graphs'],
+        DSA : ['Arrays' , 'Strings', 'Binary Search', 'Recursion','Linked List', 'Stacks', 'Queues', 'Trees' , 'Graphs', 'DP'],
         OS : ['Processes' , 'Threads' , 'Deadlock'],
-        DBMS : ['TCP/IP', 'HTTP']
+        DBMS : ['Normalization', 'Indexes', 'Transactions'],
+        CN :['TCP/IP', 'HTTP']
     },
     Analyst : {
         DSA : ['Arrays' , 'Basic Math'],
         DBMS :['SQL Joins', 'Indexes'],
         OS : [],
         CN : []
+    },
+    DSA :{
+    DSA : ['Arrays', 'Strings', 'Binary Search' ,'Recursion' , 'Trees', 'Graphs' , 'DP'],
+    OS : [],
+    DBMS : [],
+    cn :[]
+    },
+    CS :{
+        DSA :['Arrays', 'Strings'],
+        OS : ['Processes', 'Threads', 'Deadlock', 'Scheduling'],
+        DBMS : ['Indexes', 'Transactions','Isolation Levels'],
+        CN : ['TCP/IP', 'HTTP', 'DNS']
     }
 };

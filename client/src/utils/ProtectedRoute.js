@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
    const [isAuth, setisAuth] = useState(false);
 
    useEffect(()=>{
-      const token = getToken()
+      const token = getToken();
       if(token) {
          setisAuth(true);
       }

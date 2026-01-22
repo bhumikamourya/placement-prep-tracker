@@ -27,10 +27,10 @@ const AddSkill = ({ onAdd }) => {
         <form onSubmit={handleSubmit}>
             <input placeholder='Topic Name' value={form.topicName} onChange={e => setform({ ...form, topicName: e.target.value })} required />
             <select value={form.category} onChange={e => setform({ ...form, category: e.target.value })} required>
-                <option>DSA</option>
-                <option>OS</option>
-                <option>DBMS</option>
-                <option>CN</option>
+                <option value="SDE">SDE</option>
+                <option value="Analyst">Analyst</option>
+                <option value="DSA">DSA</option>
+                <option value="CS">CS</option>
             </select>
             <select value={form.status} onChange={e => setform({ ...form, status: Number(e.target.value) })} required>
                 <option value={0}>Not Started</option>

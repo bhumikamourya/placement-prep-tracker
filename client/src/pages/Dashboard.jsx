@@ -12,7 +12,7 @@ const Dashboard = () => {
     const [data, setdata] = useState(null);
     const [loading, setloading] = useState(true);
     const [error, seterror] = useState("");
-    const [readiness, setReadiness] = useState(0);
+    const [readinessIndex, setReadinessIndex] = useState(0);
     const [gaps, setGaps] = useState([]);
     const [mockAnalysis, setMockAnalysis] = useState(null);
     const [trend, setTrend] = useState([]);
@@ -23,28 +23,39 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const res = await api.get("/dashboard");
+                const res = await api.get("/dashboard");  //which gets : userName, totalSkills , totalTasks, completedTasks
                 console.log(res.data);
                 setdata(res.data);
 
-                const readinessData = await getReadiness();
-                setReadiness(readinessData.readinessScore ?? 0);
+                const readinessData = await getReadiness();  // it calls skillGapservice.js  ->/skill-gap
+                setReadinessIndex(readinessData.readinessScore ?? 0);
 
                 const explanationRes = await api.get("/readiness/explain");
                 setReadinessExplanation(explanationRes.data.explanation);
  
+                try{
                 const gapRes = await getSkillGap();
                 setGaps(gapRes);
-
+                }catch{
+                    setGaps([]);
+                }
+                try{
                 const mock = await getMockAnalysis();
                 setMockAnalysis(mock);
+                }catch{
+                    setMockAnalysis([]);
+                }
 
                 const trendData = await getReadinessTrend();
                     setTrend(trendData.history);
                     setStreak(trendData.streak);
 
+                    try{
                 const performance = await getPerformanceAnalytics();
                 setPerformance(performance);
+                    }catch{
+                        setPerformance([]);
+                    }
             } catch (err) {
                 seterror("Failed to load dashboard");
             } finally {
@@ -67,7 +78,7 @@ const Dashboard = () => {
             <p>Completed Tasks: {data.completedTasks}</p>
             <p>Pending Tasks: {data.pendingTasks}</p>
 
-            <h3>Readiness Score: {readiness}%</h3>
+            <h3>Readiness Score: {readinessIndex}</h3>
 
             <h4>How readiness is calculated</h4>
             {readinessExplanation.length === 0 ? (
