@@ -1,20 +1,15 @@
-const { get } = require("mongoose");
 const User = require("../models/User");
-const {getDashboardSummary} = require("../services/dashboardService");
+const {getDashboardOverview} = require("../services/dashboardService");
 
 exports.getDashboardData = async (req ,res) =>{
     try{
-        const userId = req.user.id;
 
         //user
-        const user = await User.findById(userId);
+        // const user = await User.findById(userId);
 
-        const summary = await getDashboardSummary(userId);
+        const data = await getDashboardOverview(req.user.id);
 
-        res.json({
-            userName: user.name,
-            ...summary
-        });
+        res.json(data);
     }catch(error) {
         res.status(500).json({message:"Failed to load dashboard data"});
     }
