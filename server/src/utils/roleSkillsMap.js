@@ -1,4 +1,4 @@
-module.exports ={
+const roleSkillsMap ={
     SDE:{
         DSA : ['Arrays' , 'Strings', 'Binary Search', 'Recursion','Linked List', 'Stacks', 'Queues', 'Trees' , 'Graphs', 'DP'],
         OS : ['Processes' , 'Threads' , 'Deadlock'],
@@ -24,3 +24,10 @@ module.exports ={
         CN : ['TCP/IP', 'HTTP', 'DNS']
     }
 };
+module.exports = {
+    getSkillsForRole : (role) =>{
+        const skills = roleSkillsMap[role];
+        if(!skills) console.warn(`Invalid role requested : ${role}`);
+        return skills || {};
+    }
+}

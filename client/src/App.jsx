@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Skills from './pages/Skills';
 import StudyPlan from './pages/StudyPlan';
+import SkillGap from './pages/SkillGap';
 
 function App() {
   return (
@@ -23,6 +24,12 @@ function App() {
       element={
       <ProtectedRoute>
         <Skills/>
+        </ProtectedRoute>
+      }/>
+      <Route path="/skill-gap" 
+      element={
+      <ProtectedRoute>
+        <SkillGap/>
         </ProtectedRoute>
       }/>
       <Route path='/study-plan' element={<ProtectedRoute><StudyPlan/></ProtectedRoute>}/>

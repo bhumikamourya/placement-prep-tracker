@@ -28,3 +28,25 @@ exports.getSkills = async(req,res)=>{
         res.status(500).json({message : "Server Error"});
     }
 };
+
+exports.updateSkill = async(req, res)=>{
+    try{
+        const {status, timeSpent} = req.body;
+
+        const skill = await Skill.findOne({
+            _id : req.params.id,
+            userId: req.user.id,
+        });
+        if(!skill){
+            return res.status(404).json({message: "Skill not found"});
+        }
+        if(status != undefined) skill.status = status;
+        if(timeSpent != undefined) skill.timeSpent += timeSpent;
+
+        skill.lastUpdated = new Date();
+        await skill.save();
+        res.json(skill);
+    }catch(err){
+        res.status(500).json({message : "Failed to update skill"});
+    }
+};

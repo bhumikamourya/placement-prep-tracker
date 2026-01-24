@@ -38,7 +38,7 @@ exports.getMockTests = async (req, res) => {
 //get weak topics
 exports.getWeakTopics = async (req, res) => {
     try {
-        const tests = await MockTest.find({ userId: req.user.id }).sort({date : -1});
+        const tests = await MockTest.find({ userId: req.user.id }).sort({ date: -1 });
         const topicAccuracy = {};
         tests.forEach(test => {
             const accuracy = (test.correctAnswers / test.totalQuestions) * 100;
@@ -50,61 +50,62 @@ exports.getWeakTopics = async (req, res) => {
         const weakTopics = [];
         for (let topic in topicAccuracy) {
             const avg = topicAccuracy[topic].reduce((a, b) => a + b, 0) / topicAccuracy[topic].length;
-            if(avg < 70){
+            if (avg < 70) {
                 weakTopics.push({
-                    topic,averageAccuracy: avg.toFixed(2)
+                    topic, averageAccuracy: avg.toFixed(2)
                 });
             }
         }
         res.json(weakTopics);
-    }catch(error){
-        res.status(500).json({message: "Server Error"});
+    } catch (error) {
+        console.error("Get Weak Topics Error:", error);
+        res.status(500).json({ message: "Server Error",error : err.message });
     }
 };
 
 
 exports.getMockAnalysis = async (req, res) => {
-    try{
-  const tests = await MockTest.find({ userId: req.user.id }).sort({date :-1});
+    try {
+        const tests = await MockTest.find({ userId: req.user.id }).sort({ date: -1 });
 
-  if (tests.length === 0) {
-    return res.json({ hasMock: false });
-  }
+        if (tests.length === 0) {
+            return res.json({ hasMock: false });
+        }
 
-  let totalQ = 0;
-  let totalCorrect = 0;
-  const topicAccuracy = {};
+        let totalQ = 0;
+        let totalCorrect = 0;
+        const topicAccuracy = {};
 
-  tests.forEach(t => {
-    totalQ += t.totalQuestions;
-    totalCorrect += t.correctAnswers;
+        tests.forEach(t => {
+            totalQ += t.totalQuestions;
+            totalCorrect += t.correctAnswers;
 
-    const acc = (t.correctAnswers / t.totalQuestions) * 100;
-    topicAccuracy[t.topic] = topicAccuracy[t.topic] || [];
-    topicAccuracy[t.topic].push(acc);
-  });
+            const acc = (t.correctAnswers / t.totalQuestions) * 100;
+            topicAccuracy[t.topic] = topicAccuracy[t.topic] || [];
+            topicAccuracy[t.topic].push(acc);
+        });
 
-  const accuracy = Math.round((totalCorrect / totalQ) * 100);
+        const accuracy = Math.round((totalCorrect / totalQ) * 100);
 
-  const weakTopics = Object.entries(topicAccuracy)
-    .map(([topic, arr]) => ({
-      topic,
-      avg: arr.reduce((a, b) => a + b, 0) / arr.length
-    }))
-    .filter(t => t.avg < 70)
-    .map(t => t.topic);
+        const weakTopics = Object.entries(topicAccuracy)
+            .map(([topic, arr]) => ({
+                topic,
+                avg: arr.reduce((a, b) => a + b, 0) / arr.length
+            }))
+            .filter(t => t.avg < 70)
+            .map(t => t.topic);
 
-  const readinessImpact = accuracy >= 80 ? +5 : accuracy >= 60 ? 0 : -5;
+        const readinessImpact = accuracy >= 80 ? +5 : accuracy >= 60 ? 0 : -5;
 
-  res.json({
-    hasMock: true,
-    accuracy,
-    totalQuestions: totalQ,
-    correctAnswers: totalCorrect,
-    weakTopics,
-    readinessImpact
-  });
-}catch(err){
-    res.status(500).json({message: "Server Error"});
-}
+        res.json({
+            hasMock: true,
+            accuracy,
+            totalQuestions: totalQ,
+            correctAnswers: totalCorrect,
+            weakTopics,
+            readinessImpact
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Server Error", error : err.message });
+    }
 };

@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
-import { getSkills } from "../services/skillService";
 import AddSkill from "../components/AddSkills";
+import { getSkills, updateSkill } from "../services/skillService";
 
 const Skills = () => {
     const [skills, setSkills] = useState([]);
 
+    const handleUpdate = async (skillId, status, minutes = null) => {
+        try {
+            const payload = {status};
+            if(minutes) payload.timeSpent = minutes;
+
+            const updated = await updateSkill(skillId, payload);
+            setSkills(prev => 
+                prev.map(s => s._id === skillId ? updated : s));
+        } catch (err) {
+            alert("Failed to update skill");
+        }
+    };
+
     useEffect(() => {
-            getSkills().then(setSkills);
-        }, []);
+        getSkills().then(setSkills);
+    }, []);
     const grouped = skills.reduce((acc, skill) => {
         acc[skill.category] = acc[skill.category] || [];
         acc[skill.category].push(skill);
@@ -22,8 +35,18 @@ const Skills = () => {
                 <div key={category}>
                     <h3>{category}</h3>
                     {grouped[category].map(skill => (
-                        <div key={skill._id}>
-                            {skill.topicName} - {["Not Started", "In Progress", "Strong"][skill.status]}
+                        <div key={skill._id} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "8px" }}>
+                            <strong>{skill.topicName}</strong>
+                            <p>Status:
+                                <select value={skill.status} onChange={(e)=> handleUpdate(skill._id, Number(e.target.value))}>
+                                    <option value={0}>Not Started</option>
+                                    <option value={1}>In Progress</option>
+                                    <option value={2}>Strong</option>
+                                </select>
+                            </p>
+                            <p>Time Spent: {skill.timeSpent} min</p>
+                            <button onClick={() => handleUpdate(skill._id, skill.status, 30)}>+30 min Study</button>
+                            <p>Last Updated: {" "}{skill.lastUpdated ? new Date(skill.lastUpdated).toLocaleDateString() : "Never"}</p>
                         </div>
                     ))}
                 </div>

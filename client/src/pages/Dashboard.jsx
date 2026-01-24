@@ -162,6 +162,11 @@
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
+
+import OverviewCards from "../components/dashboard/OverviewCards";
+import ReadinessCard from "../components/dashboard/ReadinessCard";
+import FocusCard from "../components/dashboard/FocusCard";
+
 const Dashboard = () => {
 
     const [data, setData] = useState(null);
@@ -187,7 +192,15 @@ const Dashboard = () => {
     return (
         <>
             <h2>Hello, {data.user?.name ?? "User"} 👋</h2>
-            <p>Total Skills: {data.user.totalSkills}</p>
+
+            <OverviewCards
+            user ={data.user}
+            study ={data.study}
+            mocks={data.mocks}/>
+
+            <ReadinessCard readiness={data.readiness}/>
+            <FocusCard message={data.focusMessage}/>
+            {/* <p>Total Skills: {data.user.totalSkills}</p>
             <p>Weak Skills: {data.user.weakSkills}</p>
 
             <p>Total Tasks: {data.study.totalTasks}</p>
@@ -207,7 +220,7 @@ const Dashboard = () => {
                 <div>
                     <strong>Focus:</strong> {data.focusMessage}
                 </div>
-            )}
+            )} */}
         </>
     );
 }

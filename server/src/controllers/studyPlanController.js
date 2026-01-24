@@ -116,11 +116,12 @@ exports.generateStudyPlan = async (req, res) => {
             })
             return res.json(plan);
         }
-        res.status(500).json({ message: "Failed to generate study plan" })
+        res.status(500).json({ message: "Failed to generate study plan" ,error : err.message})
     }
 };
 
 exports.getTodayPlan = async (req, res) => {
+    try{
     const plan = await StudyPlan.findOne({
         userId: req.user.id,
         date: getToday()
@@ -129,21 +130,28 @@ exports.getTodayPlan = async (req, res) => {
         return res.status(404).json({ message: "No plan for today" });
     }
     res.json(plan);
+}catch(err){
+    res.status(500).json({message : "Server Error", error : err.message});
+}
 };
 
 exports.markTaskDone = async (req, res) => {
-    const plan = await StudyPlan.findOne({ userId : req.user.id, "tasks._id": req.params.taskId });
+    try{
+    const plan = await StudyPlan.findOne({ userId: req.user.id, "tasks._id": req.params.taskId });
     const task = plan.tasks.id(req.params.taskId);
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    if(task.status === "DONE"){
-        return res.status(400).json({message :"Task already completed"});
+    if (task.status === "DONE") {
+        return res.status(400).json({ message: "Task already completed" });
     }
-    task.status= "DONE";
+    task.status = "DONE";
     await plan.save();
 
     await saveDailyPerformance(plan.userId);
 
     res.json({ message: "Task marked DONE " });
+}catch(err){
+    res.status(500).json({message : "Server error", error : err.message});
+}
 };

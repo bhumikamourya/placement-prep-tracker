@@ -4,3 +4,7 @@ export const getReadinessTrend = async () => {
   const res = await api.get("/readiness/trend");
   return res.data;
 };
+export const getReadinessExplanation = async ()=>{
+  const res = await api.get("/readiness/explain");
+  return res.data;
+}
