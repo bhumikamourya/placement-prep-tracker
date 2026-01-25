@@ -11,7 +11,7 @@ const Login = () => {
         e.preventDefault();
         try{
             const res = await login(form);
-            console.log("Login Successful", res)
+            console.log("Login Successful")
         navigate("/dashboard");
         }catch(err){
             seterror("Invalid email or password");

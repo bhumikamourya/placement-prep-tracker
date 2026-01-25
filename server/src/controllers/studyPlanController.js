@@ -3,10 +3,16 @@ const Skill = require("../models/skill");
 const MockTest = require("../models/MockTest");
 const { saveDailyPerformance } = require("../services/performanceService");
 const { adjustStudyWeights } = require("../services/studyPlanAdjustmentService");
+const { getTopSkillGaps } = require("../services/skillGapService");
+const {updateSkillAfterStudy} = require("../services/skillProgressService");
 
 const DAILY_TIME_LIMIT = 120;
 
-const getToday = () => new Date().toISOString().split("T")[0];
+const getToday = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
 
 exports.generateStudyPlan = async (req, res) => {
     try {
@@ -18,10 +24,10 @@ exports.generateStudyPlan = async (req, res) => {
         if (existing) return res.json(existing);
 
         //fetch data
-        const skills = await Skill.find({ userId });
+        const gaps = await getTopSkillGaps(userId);
 
         //block meaningless system outputs.
-        if (skills.length === 0) {
+        if (gaps.length === 0) {
             return res.status(400).json({
                 message: "No skills found. Add skills before generating study plan."
             })
@@ -29,16 +35,16 @@ exports.generateStudyPlan = async (req, res) => {
 
         let reasons = [];
 
-        skills.filter(s => s.status === 0).forEach(skill => {
-            reasons.push(`Added ${skill.topicName} because it is not started `);
+        gaps.filter(s => s.status === 0).forEach(gap => {
+            reasons.push(`${gap.topic} identified as a gap (scheduled based on daily time limit)`);
         });
 
-        skills.filter(s => s.status === 1).forEach(skill => {
-            reasons.push(`Continued ${skill.topicName} due to partial mastery`);
+        gaps.filter(s => s.status === 1).forEach(gap => {
+            reasons.push(`${gap.topic} needs revision (may be scheduled in upcoming days)`);
         })
 
-        const adjustmentNote = await adjustStudyWeights(userId);
-
+        // const adjustmentNote = await adjustStudyWeights(userId);
+        const adjustmentNote = null;
 
         const mocks = await MockTest.find({ userId });
 
@@ -52,23 +58,34 @@ exports.generateStudyPlan = async (req, res) => {
 
         let tasks = [];
         //missing topics ->high
-        skills.filter(s => s.status === 0).forEach(skill => {
+        gaps.forEach(gap => {
+            let estimatedTime = 40;
+            let priority = "MEDIUM";
+
+            if (gap.priority >= 6) {
+                estimatedTime = 60;
+                priority = "HIGH";
+            }
+
+            if (gap.status === 1 && accuracyMap[gap.topic] < 50) {
+                estimatedTime += 20;
+            }
             tasks.push({
-                topic: skill.topicName,
-                category: skill.category,
-                estimatedTime: 60,
-                priority: "HIGH",
+                topic: gap.topic,
+                category: gap.category,
+                estimatedTime,
+                priority,
                 status: "PENDING"
             });
         });
 
         //weak topics ->medium
-        skills.filter(s => s.status === 1).forEach(skill => {
+        gaps.filter(s => s.status === 1).forEach(gap => {
             let time = 30;
-            if (accuracyMap[skill.topicName] < 50) time += 20;
+            if (accuracyMap[gap.topic] < 50) time += 20;
             tasks.push({
-                topic: skill.topicName,
-                category: skill.category,
+                topic: gap.topic,
+                category: gap.category,
                 estimatedTime: time,
                 priority: "MEDIUM",
                 status: "PENDING"
@@ -84,6 +101,13 @@ exports.generateStudyPlan = async (req, res) => {
                 used += task.estimatedTime;
             }
         }
+        //skipped due to time limit-> logic
+        const skippedTopics = gaps.filter(gap => !finalTasks.some(t => t.topic === gap.topic))
+            .map(gap => ({
+                topic: gap.topic,
+                category: gap.category,
+                reason: "Daily time limit reached"
+            }));
 
         if (finalTasks.length === 0) {
             return res.json({
@@ -102,6 +126,7 @@ exports.generateStudyPlan = async (req, res) => {
             userId,
             date: today,
             tasks: finalTasks,
+            skippedTopics,
             adjustmentNote,
             decisionReasons: reasons
         });
@@ -116,42 +141,47 @@ exports.generateStudyPlan = async (req, res) => {
             })
             return res.json(plan);
         }
-        res.status(500).json({ message: "Failed to generate study plan" ,error : err.message})
+        res.status(500).json({ message: "Failed to generate study plan", error: error.message })
     }
 };
 
 exports.getTodayPlan = async (req, res) => {
-    try{
-    const plan = await StudyPlan.findOne({
-        userId: req.user.id,
-        date: getToday()
-    });
-    if (!plan) {
-        return res.status(404).json({ message: "No plan for today" });
+    try {
+        const plan = await StudyPlan.findOne({
+            userId: req.user.id,
+            date: getToday()
+        });
+        if (!plan) {
+            return res.status(404).json({ message: "No plan for today" });
+        }
+        res.json(plan);
+    } catch (err) {
+        res.status(500).json({ message: "Server Error", error: err.message });
     }
-    res.json(plan);
-}catch(err){
-    res.status(500).json({message : "Server Error", error : err.message});
-}
 };
 
 exports.markTaskDone = async (req, res) => {
-    try{
-    const plan = await StudyPlan.findOne({ userId: req.user.id, "tasks._id": req.params.taskId });
-    const task = plan.tasks.id(req.params.taskId);
+    try {
+        const plan = await StudyPlan.findOne({ userId: req.user.id, "tasks._id": req.params.taskId });
+        const task = plan.tasks.id(req.params.taskId);
 
-    if (!task) return res.status(404).json({ message: "Task not found" });
+        if (!task) return res.status(404).json({ message: "Task not found" });
 
-    if (task.status === "DONE") {
-        return res.status(400).json({ message: "Task already completed" });
+        if (task.status === "DONE") {
+            return res.status(400).json({ message: "Task already completed" });
+        }
+        task.status = "DONE";
+        await plan.save();
+
+        await updateSkillAfterStudy({
+            userId : plan.userId,
+            topic : task.topic,
+            minutes : task.estimatedTime
+        });
+        await saveDailyPerformance(plan.userId);
+
+        res.json({ message: "Task marked DONE " });
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
     }
-    task.status = "DONE";
-    await plan.save();
-
-    await saveDailyPerformance(plan.userId);
-
-    res.json({ message: "Task marked DONE " });
-}catch(err){
-    res.status(500).json({message : "Server error", error : err.message});
-}
 };

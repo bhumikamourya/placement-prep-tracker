@@ -159,6 +159,7 @@
 //         </div>
 //     );
 // };
+import { getPerformanceAnalytics } from "../services/performanceService";
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
@@ -178,6 +179,8 @@ const Dashboard = () => {
             try {
                 const res = await api.get("/dashboard");
                 setData(res.data);
+
+                getPerformanceAnalytics().then(console.log);
             } catch (err) {
                 setError("Failed to load Dashboard");
             } finally {

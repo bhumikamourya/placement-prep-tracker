@@ -27,21 +27,5 @@ const skillSchema = new mongoose.Schema({
         type: Date,
         default : Date.now
     },
-    // name : {
-    //     type : String,
-    //     required : true,
-    // },
-    // level : {
-    //     type : Number,
-    //     default : 0, // current skill level
-    // },
-    // requiredLevel :{
-    //     type : Number,
-    //     default : 7, //placement target
-    // },
-    // timeSpent : {
-    //     type : Number,
-    //     default : 0,
-    // },
 });
 module.exports = mongoose.model("Skill", skillSchema);
