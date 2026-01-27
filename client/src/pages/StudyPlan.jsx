@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import {generateStudyPlan, getStudyPlan, markTaskDone } from "../services/studyPlanService";
+import {useNavigate} from "react-router-dom";
 
 const StudyPlan = ()=>{
     const [plan, setPlan] = useState(null);
     const [loading, setloading] = useState(true);
+    const navigate = useNavigate();
     
 
     useEffect(()=>{
@@ -25,7 +27,8 @@ const StudyPlan = ()=>{
     };
         const handleComplete = async(taskId) =>{
             await markTaskDone(taskId);
-            loadPlan();
+            await loadPlan();
+            navigate("/dashboard");
         };
         if(loading) return <p>Generating study plan...</p>;
         if(!plan) return <p>No study plan for today</p>;
@@ -38,7 +41,7 @@ const StudyPlan = ()=>{
                 )}
 
                     <div key={plan.date} style={{marginBottom:"20px"}}>
-                        <h3>{new Date(plan.date).toLocaleString()}</h3>
+                        <h3>{new Date(plan.date).toLocaleString("en-In")}</h3>
 
                         {plan.adjustmentNote &&(
                             <div style={{paddding : "10px" , background: "#fff3cd", marginBottom: "10px"}}>

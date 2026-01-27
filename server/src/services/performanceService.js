@@ -2,15 +2,13 @@ const PerformanceSnapshot = require("../models/PerformanceSnapshot");
 const StudyPlan = require("../models/StudyPlan");
 const ReadinessHistory = require("../models/ReadinessHistory");
 const { evaluateSkillStrength } = require("./skillStrengthEvaluator");
+const {getStartOfToday, getEndOfToday} = require("../utils/date");
 
 exports.saveDailyPerformance = async (userId) => {
-    const today = new Date().toISOString().split("T")[0];
+    const start = getStartOfToday();
+    const end = getEndOfToday();
 
-    const start = new Date(today);
-    const end = new Date(today);
-    end.setHours(23, 59, 59, 999);
-
-    const plan = await StudyPlan.findOne({ userId, date: today });
+    const plan = await StudyPlan.findOne({ userId, date: start });
     if (!plan) return;
 
     const tasksAssigned = plan.tasks.length;
@@ -28,11 +26,11 @@ exports.saveDailyPerformance = async (userId) => {
         { userId, date: { $gte: start, $lte: end } },
         {
             userId,
+            date : start,
             tasksAssigned,
             tasksCompleted,
             completionRate,
             avgReadinessScore: readiness?.score || 0,
-            date: new Date()
         },
         { upsert: true, new: true }
     );

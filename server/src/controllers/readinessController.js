@@ -1,6 +1,9 @@
 const ReadinessHistory = require("../models/ReadinessHistory.js");
+const Skill = require("../models/skill.js");
+const MockTest = require("../models/MockTest.js");
+const { saveReadinessSnapshot } = require("../services/readinessService.js");
 const { calculateReadiness } = require("../utils/scoreCalculator.js");
-exports.getReadinessScore = async (req, res) => {
+exports.calculateReadiness = async (req, res) => {
     try {
         const skills = await Skill.find({ userId: req.user.id });
         const mocks = await MockTest.find({ userId: req.user.id });
@@ -8,6 +11,16 @@ exports.getReadinessScore = async (req, res) => {
         await saveReadinessSnapshot(req.user.id, score);
         res.json({ readinessScore: score });
     } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+exports.getLatestReadiness = async (req, res) => {
+    try {
+        const latest = await ReadinessHistory.findOne({ userId: req.user.id }).sort({ date: -1 });
+
+        res.json({ readinessScore: latest?.score || 0 });
+    } catch (err) {
         res.status(500).json({ message: "Server Error" });
     }
 };

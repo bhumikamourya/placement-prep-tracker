@@ -3,7 +3,7 @@ const MockTest = require("../models/MockTest");
 const PerformanceSnapshot = require("../models/PerformanceSnapshot");
 
 exports.evaluateSkillStrength = async(userId) =>{
-    const recentPerformance = await PerformanceSnapshot.find({userId}).sort({createdAt : -1}).limit(5);
+    const recentPerformance = await PerformanceSnapshot.find({userId}).sort({date : -1}).limit(5);
 
     if(recentPerformance.length < 3) return ;
 
@@ -19,7 +19,7 @@ exports.evaluateSkillStrength = async(userId) =>{
     const accuracyMap = {};
     mocks.forEach(m =>{
         if(m.totalQuestions > 0 ){
-            accuracyMap[topic] = (m.correctAnswers / m.totalQuestions) *100;
+            accuracyMap[m.topic] = (m.correctAnswers / m.totalQuestions) *100;
         }
     });
 

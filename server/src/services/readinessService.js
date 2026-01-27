@@ -1,16 +1,16 @@
 const ReadinessHistory = require("../models/ReadinessHistory");
+const {getStartOfToday, getEndOfToday} = require("../utils/date");
 
 exports.saveReadinessSnapshot = async (userId, score) => {
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  const start = getStartOfToday();
+  const end = getEndOfToday();
 
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
-
-  const exists = await ReadinessHistory.findOne({
+  const exists = await ReadinessHistory.findOneAndUpdate({
     userId,
-    date: {$gte: today, $lte: end }
-  });
+    date: {$gte: start, $lte: end },
+    userId, score,
+    date : start
+  },{upsert : true, new : true});
 
   if (!exists) {
     await ReadinessHistory.create({ userId, score });
