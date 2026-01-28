@@ -3,6 +3,12 @@ exports.getStartOfToday = ()=>{
     d.setHours(0,0,0,0);
     return d;
 };
+exports.getStartOfDaysAgo = (n) => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - n);
+    return d;
+};
 
 exports.getEndOfToday = () => {
     const d = new Date();

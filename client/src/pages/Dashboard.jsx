@@ -5,19 +5,17 @@ import OverviewCards from "../components/dashboard/OverviewCards";
 import ReadinessCard from "../components/dashboard/ReadinessCard";
 import FocusCard from "../components/dashboard/FocusCard";
 import PerformanceChart from "../charts/performanceChart";
-
-import { usePerformanceAnalytics } from "../hooks/usePerformanceAnalytics";
+import { useWeeklyPerformance } from "../hooks/useWeeklyPerformance";
 
 const Dashboard = () => {
-    const { performance, loading: perfLoading } = usePerformanceAnalytics();
-    console.log("PERFORMANCE RAW 👉", performance);
-
+    const { data: weeklyPerf, loading: perfLoading } = useWeeklyPerformance();
 
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    console.log("DASHBOARD DATA", data);
+    console.log("DASHBOARD DATA", data)
+    console.log("PERFORMANCE RAW 👉", performance);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -45,11 +43,10 @@ const Dashboard = () => {
 
             <ReadinessCard readiness={data.readiness} />
 
-            {!perfLoading && Array.isArray(performance) && performance.length > 0 && (
-                <PerformanceChart data={performance} />
+
+            {!perfLoading && Array.isArray(weeklyPerf) && weeklyPerf.length > 0 && (
+                <PerformanceChart data={weeklyPerf} />
             )}
-
-
 
             <FocusCard message={data.focusMessage} />
         </div>
