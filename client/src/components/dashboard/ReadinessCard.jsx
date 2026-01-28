@@ -1,7 +1,7 @@
 import React from "react";
 
-const ReadinessCard = ({ readiness }) => {
-    const { current = 0, last = 0, delta = 0 } = readiness || {};
+const ReadinessCard = ({ current= 0, last =0 }) => {
+    const delta = current - last;
 
     // console.log("READINESS", readiness);
 

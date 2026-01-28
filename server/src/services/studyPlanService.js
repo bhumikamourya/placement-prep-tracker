@@ -1,12 +1,12 @@
 const StudyPlan = require("../models/StudyPlan");
 const MockTest = require("../models/MockTest");
 const { getTopSkillGaps } = require("./skillGapService");
-const { getStartOfToday } = require("../utils/date");
+const {  getTodayKey } = require("../utils/date");
 
 const DAILY_TIME_LIMIT = 120;
 
 exports.generateDailyStudyPlan = async (userId) => {
-    const today = getStartOfToday();
+    const today = getTodayKey();
 
     //prevent duplicate
     const existing = await StudyPlan.findOne({ userId, date: today });
@@ -95,7 +95,8 @@ exports.generateDailyStudyPlan = async (userId) => {
         }));
 
     // save plan
-    const plan = await StudyPlan.create({
+    try{
+        const plan = await StudyPlan.create({
         userId,
         date: today,
         tasks: finalTasks,
@@ -107,4 +108,11 @@ exports.generateDailyStudyPlan = async (userId) => {
         status: "CREATED",
         plan
     };
+}catch(err){
+    if(err.code === 11000){
+        const existing = await StudyPlan.findOne({userId, date: today});
+        return {status: "EXISTS", plan: existing};
+    }
+    throw err;
+}
 };

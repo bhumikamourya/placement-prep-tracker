@@ -1,8 +1,14 @@
 const User = require("../models/User");
 const {getDashboardOverview} = require("../services/dashboardService");
+const {calculateReadiness} = require("./readinessController");
 
 exports.getDashboardData = async (req ,res) =>{
     try{
+
+        await calculateReadiness(req, {
+            json: ()=>{},
+            status: ()=>({json: ()=>{}})
+        });
         const data = await getDashboardOverview(req.user.id);
 
         res.json(data);

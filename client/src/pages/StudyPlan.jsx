@@ -14,13 +14,10 @@ const StudyPlan = ()=>{
 
     const loadPlan = async ()=>{
         try{
-        const data  = await getStudyPlan();
+        const data  = await generateStudyPlan();
         setPlan(data);
         }catch(err){
-            if(err.response?.status === 404){
-                const data = await generateStudyPlan();
-                setPlan(data);
-            }
+            console.error(err);
         }finally{
             setloading(false);
         }

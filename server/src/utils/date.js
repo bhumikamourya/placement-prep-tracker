@@ -1,8 +1,13 @@
-exports.getStartOfToday = ()=>{
+exports.getStartOfToday = () => {
     const d = new Date();
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     return d;
 };
+
+exports.getTodayKey = () => {
+    return new Date(new Date().setHours(0,0,0,0));
+}
+
 exports.getStartOfDaysAgo = (n) => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
