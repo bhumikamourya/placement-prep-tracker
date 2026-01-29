@@ -27,9 +27,9 @@ const performanceSnapshotSchema = new mongoose.Schema({
     },
       streak: {
         type: Number,
-        default: 1
+        default: 0
     }
-});
+},{timestamps: true});
 
 performanceSnapshotSchema.index(
     { userId: 1, date: 1 },

@@ -22,9 +22,28 @@ const calculateMockBonus = (mockTests) => {
 };
 
 //final readiness score
-const calculateReadiness = (skills, mockTests) => {
-    const skillScore = calculateSkillScore(skills);
-    const mockBonus = calculateMockBonus(mockTests);
-    return skillScore + mockBonus;
+// utils/scoreCalculator.js
+const calculateReadiness = async (skills = [], mocks = []) => {
+    // skill score
+    let skillScore = 0;
+    if (skills.length > 0) {
+        const total = skills.reduce((sum, s) => sum + (s?.status ?? 0), 0);
+        skillScore = Math.round((total / (skills.length * 2)) * 100); // status max 2
+    }
+
+    // mock score
+    let mockScore = 0;
+    if (mocks.length > 0) {
+        const totalAcc = mocks.reduce((sum, m) => {
+            if (!m || m.totalQuestions === 0) return sum;
+            return sum + ((m.correctAnswers ?? 0) / m.totalQuestions) * 100;
+        }, 0);
+        mockScore = Math.round(totalAcc / mocks.length);
+    }
+
+    // weighted readiness: 60% skills, 40% mocks
+    const finalScore = Math.round(skillScore * 0.6 + mockScore * 0.4);
+    return finalScore;
 };
+
 module.exports = { calculateSkillScore, calculateMockBonus, calculateReadiness };

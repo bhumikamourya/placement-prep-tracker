@@ -7,13 +7,12 @@ const User = require("../models/User");
 const {getStartOfToday} = require("../utils/date");
 
 exports.getDashboardOverview = async (userId) => {
-
   const today = getStartOfToday();
 
-  // BASIC USER INFO
+  // basic user info
   const user = await User.findById(userId).select("name");
 
-  //CORE DATA
+  //skills
   const skills = await Skill.find({ userId });
 
   const todayPlan = await StudyPlan.findOne({
@@ -41,19 +40,13 @@ exports.getDashboardOverview = async (userId) => {
   const pendingTasks = totalTasks - completedTasks;
 
   // READINESS (READ ONLY — NO CALCULATION HERE)
-  const lastTwoReadiness = await ReadinessHistory
-    .find({ userId })
-    .sort({ date: -1 })
-    .limit(2);
-
+  const lastTwoReadiness = await ReadinessHistory.find({ userId }).sort({ date: -1 }).limit(2);
   const currentReadiness = lastTwoReadiness[0]?.score || 0;
   const previousReadiness = lastTwoReadiness[1]?.score ?? currentReadiness;
   const delta = currentReadiness - previousReadiness;
 
   // PERFORMANCE SNAPSHOT (LATEST DAY)
-  const latestPerformance = await PerformanceSnapshot
-    .findOne({ userId })
-    .sort({ date: -1 });
+  const latestPerformance = await PerformanceSnapshot.findOne({ userId }).sort({ date: -1 });
 
   const performanceSnapshot = latestPerformance
     ? {

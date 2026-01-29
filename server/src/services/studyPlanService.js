@@ -1,12 +1,12 @@
 const StudyPlan = require("../models/StudyPlan");
 const MockTest = require("../models/MockTest");
 const { getTopSkillGaps } = require("./skillGapService");
-const {  getTodayKey } = require("../utils/date");
+const {  getStartOfToday } = require("../utils/date");
 
 const DAILY_TIME_LIMIT = 120;
 
 exports.generateDailyStudyPlan = async (userId) => {
-    const today = getTodayKey();
+    const today = getStartOfToday();
 
     //prevent duplicate
     const existing = await StudyPlan.findOne({ userId, date: today });
@@ -28,12 +28,19 @@ exports.generateDailyStudyPlan = async (userId) => {
 
     //mock accuracy map
     const mocks = await MockTest.find({ userId });
+
+    //average accuracy per topic
     const accuracyMap = {};
+    const countMap = {};
     mocks.forEach(m => {
         if (m.totalQuestions > 0) {
-            accuracyMap[m.topic] = Math.round((m.correctAnswers / m.totalQuestions) * 100);
+             accuracyMap[m.topic] = (accuracyMap[m.topic] || 0) + (m.correctAnswers / m.totalQuestions) * 100;
+             countMap[m.topic] = (countMap[m.topic] || 0) + 1;
         }
     });
+    Object.keys(accuracyMap).forEach(topic => {
+  accuracyMap[topic] = Math.round(accuracyMap[topic] / countMap[topic]);
+});
 
     // const adjustmentNote = await adjustStudyWeights(userId);
     //const adjustmentNote = null;

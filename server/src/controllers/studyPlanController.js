@@ -1,7 +1,7 @@
 const StudyPlan = require("../models/StudyPlan");
 const { saveDailyPerformance } = require("../services/performanceService");
 const { updateSkillAfterStudy } = require("../services/skillProgressService");
-const { getTodayKey } = require("../utils/date");
+const { getStartOfToday } = require("../utils/date");
 const { generateDailyStudyPlan } = require("../services/studyPlanService");
 
 exports.generateStudyPlan = async (req, res) => {
@@ -29,7 +29,7 @@ exports.generateStudyPlan = async (req, res) => {
 exports.getTodayPlan = async (req, res) => {
     try {
 
-        const today = getTodayKey();
+        const today = getStartOfToday();
         const plan = await StudyPlan.findOne({
             userId: req.user.id,
             date: today

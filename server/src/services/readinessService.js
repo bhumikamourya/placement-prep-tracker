@@ -5,22 +5,18 @@ exports.saveReadinessSnapshot = async (userId, score) => {
   const start = getStartOfToday();
   const end = getEndOfToday();
 
-  const exists = await ReadinessHistory.findOneAndUpdate(
+  await ReadinessHistory.findOneAndUpdate(
     {
       userId,
       date: { $gte: start, $lte: end }
     },
     {
-      userId, 
+      userId,
       score,
       date: start
     },
-    { 
-      upsert: true, 
-      new: true 
+    {
+      upsert: true,
+      new: true
     });
-
-  if (!exists) {
-    await ReadinessHistory.create({ userId, score });
-  }
 };   

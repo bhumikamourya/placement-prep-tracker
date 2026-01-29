@@ -1,36 +1,21 @@
-const MockTest = require("../models/MockTest");
+const { addMockTestService, getMockTestService, getWeakTopicsService, getMockAnalysisService} = require("../services/mockService");
 
 //add mock test
 exports.addMockTest = async (req, res) => {
     try {
-        const { topic, totalQuestions, correctAnswers } = req.body;
-
-        if (!topic || !totalQuestions || correctAnswers === undefined) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
-        if (correctAnswers > totalQuestions) {
-            return res.status(400).json({ message: "Invalid answers count" });
-        }
-
-        const mockTest = await MockTest.create({
-            userId: req.user.id,
-            topic,
-            totalQuestions,
-            correctAnswers
-        });
-        res.status(201).json(mockTest);
-    } catch (error) {
-        res.status(500).json({ message: "Server Error" });
+        const mock = await addMockTestService(req.user.id, req.body);
+        res.status(201).json(mock);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 
 //get user mock tests
 exports.getMockTests = async (req, res) => {
     try {
-        const tests = await MockTest.find({ userId: req.user.id });
+        const tests = await getMockTestService(req.user.id);
         res.json(tests);
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({ message: "Server Error" });
     }
 };
@@ -38,74 +23,18 @@ exports.getMockTests = async (req, res) => {
 //get weak topics
 exports.getWeakTopics = async (req, res) => {
     try {
-        const tests = await MockTest.find({ userId: req.user.id }).sort({ date: -1 });
-        const topicAccuracy = {};
-        tests.forEach(test => {
-            const accuracy = (test.correctAnswers / test.totalQuestions) * 100;
-            if (!topicAccuracy[test.topic]) {
-                topicAccuracy[test.topic] = [];
-            }
-            topicAccuracy[test.topic].push(accuracy);
-        });
-        const weakTopics = [];
-        for (let topic in topicAccuracy) {
-            const avg = topicAccuracy[topic].reduce((a, b) => a + b, 0) / topicAccuracy[topic].length;
-            if (avg < 70) {
-                weakTopics.push({
-                    topic, averageAccuracy: avg.toFixed(2)
-                });
-            }
-        }
-        res.json(weakTopics);
-    } catch (error) {
-        console.error("Get Weak Topics Error:", error);
-        res.status(500).json({ message: "Server Error",error : err.message });
+        const weak = await getWeakTopicsService(req.user.id);
+        res.json(weak);
+    } catch (err) {
+        res.status(500).json({ message: err.message});
     }
 };
-
-
+//get->mockAnalysis
 exports.getMockAnalysis = async (req, res) => {
     try {
-        const tests = await MockTest.find({ userId: req.user.id }).sort({ date: -1 });
-
-        if (tests.length === 0) {
-            return res.json({ hasMock: false });
-        }
-
-        let totalQ = 0;
-        let totalCorrect = 0;
-        const topicAccuracy = {};
-
-        tests.forEach(t => {
-            totalQ += t.totalQuestions;
-            totalCorrect += t.correctAnswers;
-
-            const acc = (t.correctAnswers / t.totalQuestions) * 100;
-            topicAccuracy[t.topic] = topicAccuracy[t.topic] || [];
-            topicAccuracy[t.topic].push(acc);
-        });
-
-        const accuracy = Math.round((totalCorrect / totalQ) * 100);
-
-        const weakTopics = Object.entries(topicAccuracy)
-            .map(([topic, arr]) => ({
-                topic,
-                avg: arr.reduce((a, b) => a + b, 0) / arr.length
-            }))
-            .filter(t => t.avg < 70)
-            .map(t => t.topic);
-
-        const readinessImpact = accuracy >= 80 ? +5 : accuracy >= 60 ? 0 : -5;
-
-        res.json({
-            hasMock: true,
-            accuracy,
-            totalQuestions: totalQ,
-            correctAnswers: totalCorrect,
-            weakTopics,
-            readinessImpact
-        });
+        const analysis = await getMockAnalysisService(req.user.id);
+        res.json(analysis);
     } catch (err) {
-        res.status(500).json({ message: "Server Error", error : err.message });
+        res.status(500).json({ message:err.message });
     }
 };

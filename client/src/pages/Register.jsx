@@ -13,8 +13,17 @@ const Register = () => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+         if (!form.name || !form.email || !form.password || !form.targetRole) {
+        alert("All fields are required");
+        return;
+    }
+    try{
         await register(form);
         navigate("/login");
+    }catch(err){
+        alert(err.response?.data?.message || "Registration failed");
+    }
     };
     return (
         <form onSubmit={handleSubmit}>
@@ -22,8 +31,8 @@ const Register = () => {
             <input placeholder="Name" onChange={e => setform({ ...form, name: e.target.value })} />
             <input placeholder="Email" onChange={e => setform({ ...form, email: e.target.value })} />
             <input placeholder="Password" onChange={e => setform({ ...form, password: e.target.value })} />
-            <select onChange={e => setform({ ...form, targetRole: e.target.value })}>
-                <option>Select</option>
+            <select value={form.targetRole} onChange={e => setform({ ...form, targetRole: e.target.value })}>
+                <option value="">Select</option>
                 <option value="SDE">SDE</option>
                 <option value="Analyst">Analyst</option>
                 <option value="DSA">DSA</option>
