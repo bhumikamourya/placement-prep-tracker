@@ -9,7 +9,7 @@ exports.generateStudyPlan = async (req, res) => {
         const result = await generateDailyStudyPlan(req.user.id);
 
         if (result.status === "EXISTS") {
-            return res.json(result.plan);
+            return res.status(200).json(result.plan);
         }
 
         if (result.status === "EMPTY") {

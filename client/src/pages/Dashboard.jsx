@@ -22,7 +22,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    console.log("DASHBOARD DATA", dashboard)
+    // console.log("DASHBOARD DATA", dashboard)
 
     useEffect(() => {
         const fetchDashboard = async () => {
